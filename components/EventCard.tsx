@@ -1,4 +1,5 @@
 import { ConfidenceBadge, ReviewStatusBadge } from "@/components/StatusBadge";
+import { EventActions } from "@/components/EventActions";
 import { formatDateTime, statusLabel } from "@/lib/format";
 import type { EventRow, Party } from "@/lib/types";
 
@@ -32,6 +33,7 @@ export function EventCard({
         {isAi && <ConfidenceBadge confidence={event.summary_confidence} />}
         {isAi && <ReviewStatusBadge status={event.summary_review_status} />}
       </div>
+      <EventActions event={event} />
     </li>
   );
 }

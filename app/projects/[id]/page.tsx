@@ -3,8 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 import { StatusBadge } from "@/components/StatusBadge";
 import { AddPartyForm } from "@/components/AddPartyForm";
 import { EventCard } from "@/components/EventCard";
+import { CapturePanel } from "@/components/CapturePanel";
+import { RequirementsList } from "@/components/RequirementsList";
 import { statusLabel } from "@/lib/format";
-import type { EventRow, Party, Project } from "@/lib/types";
+import type { EventRow, Party, Project, Requirement } from "@/lib/types";
 
 async function loadProject(id: string) {
   const supabase = await createClient();
@@ -18,23 +20,29 @@ async function loadProject(id: string) {
   if (projectError) throw new Error(projectError.message);
   if (!project) return null;
 
-  const [{ data: parties, error: partiesError }, { data: events, error: eventsError }] =
-    await Promise.all([
-      supabase.from("parties").select("*").eq("project_id", id).order("created_at"),
-      supabase
-        .from("events")
-        .select("*")
-        .eq("project_id", id)
-        .order("event_date", { ascending: false }),
-    ]);
+  const [
+    { data: parties, error: partiesError },
+    { data: events, error: eventsError },
+    { data: requirements, error: requirementsError },
+  ] = await Promise.all([
+    supabase.from("parties").select("*").eq("project_id", id).order("created_at"),
+    supabase
+      .from("events")
+      .select("*")
+      .eq("project_id", id)
+      .order("event_date", { ascending: false }),
+    supabase.from("requirements").select("*").eq("project_id", id).order("created_at"),
+  ]);
 
   if (partiesError) throw new Error(partiesError.message);
   if (eventsError) throw new Error(eventsError.message);
+  if (requirementsError) throw new Error(requirementsError.message);
 
   return {
     project: project as Project,
     parties: (parties ?? []) as Party[],
     events: (events ?? []) as EventRow[],
+    requirements: (requirements ?? []) as Requirement[],
   };
 }
 
@@ -48,7 +56,7 @@ export default async function ProjectDetailPage({
 
   if (!data) notFound();
 
-  const { project, parties, events } = data;
+  const { project, parties, events, requirements } = data;
   const partyById = new Map(parties.map((p) => [p.id, p]));
 
   return (
@@ -89,6 +97,16 @@ export default async function ProjectDetailPage({
             ))}
           </ul>
         )}
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold text-neutral-800">Log a Communication</h2>
+        <CapturePanel projectId={project.id} parties={parties} />
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold text-neutral-800">Requirements</h2>
+        <RequirementsList requirements={requirements} />
       </section>
 
       <section className="space-y-3">
