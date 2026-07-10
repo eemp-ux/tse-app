@@ -5,8 +5,17 @@ import { AddPartyForm } from "@/components/AddPartyForm";
 import { EventCard } from "@/components/EventCard";
 import { CapturePanel } from "@/components/CapturePanel";
 import { RequirementsList } from "@/components/RequirementsList";
+import { BidDocuments } from "@/components/BidDocuments";
+import { RequirementChanges } from "@/components/RequirementChanges";
 import { statusLabel } from "@/lib/format";
-import type { EventRow, Party, Project, Requirement } from "@/lib/types";
+import type {
+  BidDocument,
+  EventRow,
+  Party,
+  Project,
+  Requirement,
+  RequirementChange,
+} from "@/lib/types";
 
 async function loadProject(id: string) {
   const supabase = await createClient();
@@ -24,6 +33,8 @@ async function loadProject(id: string) {
     { data: parties, error: partiesError },
     { data: events, error: eventsError },
     { data: requirements, error: requirementsError },
+    { data: documents, error: documentsError },
+    { data: changes, error: changesError },
   ] = await Promise.all([
     supabase.from("parties").select("*").eq("project_id", id).order("created_at"),
     supabase
@@ -32,17 +43,31 @@ async function loadProject(id: string) {
       .eq("project_id", id)
       .order("event_date", { ascending: false }),
     supabase.from("requirements").select("*").eq("project_id", id).order("created_at"),
+    supabase
+      .from("bid_documents")
+      .select("*")
+      .eq("project_id", id)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("requirement_changes")
+      .select("*")
+      .eq("project_id", id)
+      .order("created_at", { ascending: false }),
   ]);
 
   if (partiesError) throw new Error(partiesError.message);
   if (eventsError) throw new Error(eventsError.message);
   if (requirementsError) throw new Error(requirementsError.message);
+  if (documentsError) throw new Error(documentsError.message);
+  if (changesError) throw new Error(changesError.message);
 
   return {
     project: project as Project,
     parties: (parties ?? []) as Party[],
     events: (events ?? []) as EventRow[],
     requirements: (requirements ?? []) as Requirement[],
+    documents: (documents ?? []) as BidDocument[],
+    changes: (changes ?? []) as RequirementChange[],
   };
 }
 
@@ -56,7 +81,7 @@ export default async function ProjectDetailPage({
 
   if (!data) notFound();
 
-  const { project, parties, events, requirements } = data;
+  const { project, parties, events, requirements, documents, changes } = data;
   const partyById = new Map(parties.map((p) => [p.id, p]));
 
   return (
@@ -107,6 +132,16 @@ export default async function ProjectDetailPage({
       <section className="space-y-3">
         <h2 className="text-sm font-semibold text-neutral-800">Requirements</h2>
         <RequirementsList requirements={requirements} />
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold text-neutral-800">Bid Documents</h2>
+        <BidDocuments projectId={project.id} documents={documents} />
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold text-neutral-800">Requirement Changes</h2>
+        <RequirementChanges changes={changes} documents={documents} />
       </section>
 
       <section className="space-y-3">
