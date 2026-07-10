@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -7,12 +8,14 @@ import { CapturePanel } from "@/components/CapturePanel";
 import { RequirementsList } from "@/components/RequirementsList";
 import { BidDocuments } from "@/components/BidDocuments";
 import { RequirementChanges } from "@/components/RequirementChanges";
+import { ProjectSummaryPanel } from "@/components/ProjectSummaryPanel";
 import { statusLabel } from "@/lib/format";
 import type {
   BidDocument,
   EventRow,
   Party,
   Project,
+  ProjectSummary,
   Requirement,
   RequirementChange,
 } from "@/lib/types";
@@ -35,6 +38,7 @@ async function loadProject(id: string) {
     { data: requirements, error: requirementsError },
     { data: documents, error: documentsError },
     { data: changes, error: changesError },
+    { data: summaries, error: summariesError },
   ] = await Promise.all([
     supabase.from("parties").select("*").eq("project_id", id).order("created_at"),
     supabase
@@ -53,6 +57,12 @@ async function loadProject(id: string) {
       .select("*")
       .eq("project_id", id)
       .order("created_at", { ascending: false }),
+    supabase
+      .from("project_summaries")
+      .select("*")
+      .eq("project_id", id)
+      .order("created_at", { ascending: false })
+      .limit(1),
   ]);
 
   if (partiesError) throw new Error(partiesError.message);
@@ -60,6 +70,7 @@ async function loadProject(id: string) {
   if (requirementsError) throw new Error(requirementsError.message);
   if (documentsError) throw new Error(documentsError.message);
   if (changesError) throw new Error(changesError.message);
+  if (summariesError) throw new Error(summariesError.message);
 
   return {
     project: project as Project,
@@ -68,6 +79,7 @@ async function loadProject(id: string) {
     requirements: (requirements ?? []) as Requirement[],
     documents: (documents ?? []) as BidDocument[],
     changes: (changes ?? []) as RequirementChange[],
+    latestSummary: (summaries?.[0] ?? null) as ProjectSummary | null,
   };
 }
 
@@ -81,7 +93,7 @@ export default async function ProjectDetailPage({
 
   if (!data) notFound();
 
-  const { project, parties, events, requirements, documents, changes } = data;
+  const { project, parties, events, requirements, documents, changes, latestSummary } = data;
   const partyById = new Map(parties.map((p) => [p.id, p]));
 
   return (
@@ -97,7 +109,15 @@ export default async function ProjectDetailPage({
         {project.description && (
           <p className="mt-3 max-w-2xl text-sm text-neutral-700">{project.description}</p>
         )}
+        <Link
+          href={`/projects/${project.id}/chronology`}
+          className="mt-3 inline-block text-sm font-medium text-neutral-700 underline underline-offset-2 hover:text-neutral-900"
+        >
+          View full chronology →
+        </Link>
       </div>
+
+      <ProjectSummaryPanel projectId={project.id} latestSummary={latestSummary} />
 
       <section className="space-y-3">
         <div className="flex items-center justify-between">
