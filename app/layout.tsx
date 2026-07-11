@@ -1,28 +1,40 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Inter } from "next/font/google";
+import { createClient } from "@/lib/supabase/server";
+import { AppShell } from "@/components/AppShell";
 import "./globals.css";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "TSE — Project Prospecting Tracker",
   description: "Track pursuits, communications, requirements, and bid revisions in one chronology.",
 };
 
-export default function RootLayout({
+async function loadSidebarProjects() {
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("projects")
+      .select("id, name, status")
+      .order("created_at", { ascending: false });
+    return data ?? [];
+  } catch {
+    return [];
+  }
+}
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const projects = await loadSidebarProjects();
+
   return (
-    <html lang="en">
-      <body className="antialiased bg-neutral-50 text-neutral-900 min-h-screen">
-        <header className="border-b border-neutral-200 bg-white">
-          <div className="mx-auto max-w-5xl px-6 py-4">
-            <Link href="/" className="text-lg font-semibold tracking-tight">
-              TSE Tracker
-            </Link>
-          </div>
-        </header>
-        <main className="mx-auto max-w-5xl px-6 py-8">{children}</main>
+    <html lang="en" className={inter.variable}>
+      <body className="antialiased text-neutral-900">
+        <AppShell projects={projects}>{children}</AppShell>
       </body>
     </html>
   );

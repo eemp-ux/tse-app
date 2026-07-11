@@ -137,21 +137,21 @@ export function BidDocuments({
               value={version}
               onChange={(e) => setVersion(e.target.value)}
               placeholder="Version (e.g. 1)"
-              className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+              className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
             />
           </div>
           <input
             type="date"
             value={receivedDate}
             onChange={(e) => setReceivedDate(e.target.value)}
-            className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+            className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           />
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             rows={5}
             placeholder="Paste the RFQ / spec / bid document text…"
-            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           />
           <p className="text-xs text-neutral-500">
             Tip: use the same title as an existing document to add a new version and trigger
@@ -161,7 +161,7 @@ export function BidDocuments({
             <button
               type="submit"
               disabled={submitting}
-              className="rounded-md bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-neutral-700 disabled:opacity-50"
+              className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
             >
               {submitting ? "Saving…" : "Save Document"}
             </button>
@@ -183,7 +183,7 @@ export function BidDocuments({
       ) : (
         <ul className="space-y-2">
           {documents.map((doc) => (
-            <li key={doc.id} className="rounded-md border border-neutral-200 bg-white p-3">
+            <li key={doc.id} className="rounded-lg border border-neutral-200 bg-neutral-50/70 p-3 transition hover:border-neutral-300">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-sm font-medium text-neutral-900">

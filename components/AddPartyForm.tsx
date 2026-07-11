@@ -63,12 +63,12 @@ export function AddPartyForm({ projectId }: { projectId: string }) {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Name *"
-          className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+          className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
         />
         <select
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+          className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
         >
           <option value="customer">Customer</option>
           <option value="vendor">Vendor</option>
@@ -78,20 +78,20 @@ export function AddPartyForm({ projectId }: { projectId: string }) {
           value={organization}
           onChange={(e) => setOrganization(e.target.value)}
           placeholder="Organization"
-          className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+          className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
         />
         <input
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email"
-          className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+          className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
         />
       </div>
       <div className="flex gap-2">
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-md bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-neutral-700 disabled:opacity-50"
+          className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
         >
           {submitting ? "Adding…" : "Add"}
         </button>

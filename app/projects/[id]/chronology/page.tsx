@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ChronologyView } from "@/components/ChronologyView";
+import { BackButton } from "@/components/BackButton";
 import { buildChronology } from "@/lib/chronology";
 import type { BidDocument, EventRow, Party, Project, RequirementChange } from "@/lib/types";
 
@@ -51,13 +51,8 @@ export default async function ChronologyPage({
   return (
     <div className="space-y-6">
       <div>
-        <Link
-          href={`/projects/${id}`}
-          className="text-sm text-neutral-500 hover:text-neutral-800 hover:underline"
-        >
-          ← Back to {proj.name}
-        </Link>
-        <h1 className="mt-1 text-2xl font-bold tracking-tight">Chronology</h1>
+        <BackButton label={`Back to ${proj.name}`} fallbackHref={`/projects/${id}`} />
+        <h1 className="mt-2 text-2xl font-bold tracking-tight text-neutral-900">Chronology</h1>
         <p className="text-sm text-neutral-500">
           Unified timeline of communications, document versions, and requirement changes.
         </p>

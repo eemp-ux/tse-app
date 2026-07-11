@@ -48,7 +48,7 @@ export function NewProjectForm() {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-700"
+        className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
       >
         New Project
       </button>
@@ -58,7 +58,7 @@ export function NewProjectForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-lg border border-neutral-200 bg-white p-4 space-y-3"
+      className="rounded-xl border border-neutral-200 bg-white p-5 shadow-sm space-y-3"
     >
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-semibold">New Project</h2>
@@ -77,7 +77,7 @@ export function NewProjectForm() {
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
             placeholder="e.g. Riverside Substation Upgrade"
           />
         </label>
@@ -86,7 +86,7 @@ export function NewProjectForm() {
           <input
             value={customerName}
             onChange={(e) => setCustomerName(e.target.value)}
-            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
             placeholder="e.g. Riverside Council"
           />
         </label>
@@ -97,13 +97,13 @@ export function NewProjectForm() {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={2}
-          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
         />
       </label>
       <button
         type="submit"
         disabled={submitting}
-        className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-700 disabled:opacity-50"
+        className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
       >
         {submitting ? "Creating…" : "Create Project"}
       </button>

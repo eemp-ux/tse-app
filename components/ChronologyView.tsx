@@ -33,11 +33,11 @@ export function ChronologyView({ items }: { items: ChronologyItem[] }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-2 rounded-lg border border-neutral-200 bg-white p-3">
+      <div className="flex flex-wrap gap-2 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm">
         <select
           value={partyRole}
           onChange={(e) => setPartyRole(e.target.value)}
-          className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+          className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
         >
           <option value="all">All parties</option>
           <option value="customer">Customer</option>
@@ -47,7 +47,7 @@ export function ChronologyView({ items }: { items: ChronologyItem[] }) {
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
-          className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+          className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
         >
           <option value="all">All types</option>
           <option value="email">Email</option>
@@ -61,14 +61,14 @@ export function ChronologyView({ items }: { items: ChronologyItem[] }) {
           type="date"
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
-          className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+          className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
         />
         <span className="self-center text-sm text-neutral-400">to</span>
         <input
           type="date"
           value={endDate}
           onChange={(e) => setEndDate(e.target.value)}
-          className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+          className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
         />
         {(partyRole !== "all" || type !== "all" || startDate || endDate) && (
           <button
@@ -92,7 +92,7 @@ export function ChronologyView({ items }: { items: ChronologyItem[] }) {
           {filtered.map((item) => (
             <li
               key={item.id}
-              className={`rounded-lg border bg-white p-3 ${KIND_STYLES[item.kind] ?? ""}`}
+              className={`rounded-xl border bg-white p-4 shadow-sm transition hover:shadow-md ${KIND_STYLES[item.kind] ?? ""}`}
             >
               <div className="flex items-center justify-between gap-3 text-xs text-neutral-500">
                 <span className="font-medium text-neutral-700">{item.title}</span>

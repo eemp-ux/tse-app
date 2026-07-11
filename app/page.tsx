@@ -72,7 +72,7 @@ export default async function HomePage() {
       {loadError && <ErrorBanner message={loadError} />}
 
       {data && data.projects.length === 0 && (
-        <div className="rounded-lg border border-dashed border-neutral-300 bg-white p-8 text-center text-sm text-neutral-500">
+        <div className="rounded-xl border border-dashed border-neutral-300 bg-white p-10 text-center text-sm text-neutral-500">
           No projects yet — create one above to get started.
         </div>
       )}
@@ -87,11 +87,13 @@ export default async function HomePage() {
               <li key={project.id}>
                 <Link
                   href={`/projects/${project.id}`}
-                  className="block rounded-lg border border-neutral-200 bg-white p-4 transition hover:border-neutral-400"
+                  className="group block rounded-xl border border-neutral-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <h2 className="font-semibold text-neutral-900">{project.name}</h2>
+                      <h2 className="font-semibold text-neutral-900 group-hover:text-indigo-700">
+                        {project.name}
+                      </h2>
                       <p className="text-sm text-neutral-500">{project.customer_name}</p>
                       {project.description && (
                         <p className="mt-1 text-sm text-neutral-600 line-clamp-2">
@@ -101,7 +103,7 @@ export default async function HomePage() {
                     </div>
                     <StatusBadge status={project.status} />
                   </div>
-                  <div className="mt-3 flex gap-4 text-xs text-neutral-500">
+                  <div className="mt-4 flex gap-4 border-t border-neutral-100 pt-3 text-xs text-neutral-500">
                     <span>
                       Last activity:{" "}
                       {lastEvent

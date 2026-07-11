@@ -57,7 +57,7 @@ export function RequirementChanges({
       {sorted.map((change) => {
         const doc = change.bid_document_id ? docById.get(change.bid_document_id) : undefined;
         return (
-          <li key={change.id} className="rounded-md border border-neutral-200 bg-white p-3">
+          <li key={change.id} className="rounded-lg border border-neutral-200 bg-neutral-50/70 p-3 transition hover:border-neutral-300">
             <div className="flex items-start justify-between gap-3">
               <div className="text-xs text-neutral-500">
                 {doc ? `${doc.title} v${doc.version}` : "Manual"} ·{" "}

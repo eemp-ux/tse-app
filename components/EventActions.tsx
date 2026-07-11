@@ -70,14 +70,14 @@ export function EventActions({ event }: { event: EventRow }) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           rows={2}
-          className="w-full rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+          className="w-full rounded-md border border-neutral-300 px-2 py-1.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
         />
         {error && <p className="text-xs text-red-700">{error}</p>}
         <div className="flex gap-2">
           <button
             onClick={handleSaveEdit}
             disabled={busy}
-            className="rounded-md bg-neutral-900 px-3 py-1 text-xs font-medium text-white disabled:opacity-50"
+            className="rounded-md bg-indigo-600 px-3 py-1 text-xs font-medium text-white disabled:opacity-50"
           >
             Save
           </button>

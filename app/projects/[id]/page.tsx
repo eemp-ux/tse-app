@@ -9,6 +9,7 @@ import { RequirementsList } from "@/components/RequirementsList";
 import { BidDocuments } from "@/components/BidDocuments";
 import { RequirementChanges } from "@/components/RequirementChanges";
 import { ProjectSummaryPanel } from "@/components/ProjectSummaryPanel";
+import { BackButton } from "@/components/BackButton";
 import { statusLabel } from "@/lib/format";
 import type {
   BidDocument,
@@ -99,9 +100,10 @@ export default async function ProjectDetailPage({
   return (
     <div className="space-y-8">
       <div>
-        <div className="flex items-start justify-between gap-4">
+        <BackButton label="All Projects" fallbackHref="/" />
+        <div className="mt-2 flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">{project.name}</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-neutral-900">{project.name}</h1>
             <p className="text-sm text-neutral-500">{project.customer_name}</p>
           </div>
           <StatusBadge status={project.status} />
@@ -111,15 +113,24 @@ export default async function ProjectDetailPage({
         )}
         <Link
           href={`/projects/${project.id}/chronology`}
-          className="mt-3 inline-block text-sm font-medium text-neutral-700 underline underline-offset-2 hover:text-neutral-900"
+          className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700"
         >
-          View full chronology →
+          View full chronology
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path
+              d="M6 3.5 10.5 8 6 12.5"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </Link>
       </div>
 
       <ProjectSummaryPanel projectId={project.id} latestSummary={latestSummary} />
 
-      <section className="space-y-3">
+      <section className="space-y-3 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-neutral-800">Parties</h2>
           <AddPartyForm projectId={project.id} />
@@ -131,7 +142,7 @@ export default async function ProjectDetailPage({
             {parties.map((party) => (
               <li
                 key={party.id}
-                className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm"
+                className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm"
               >
                 <div className="font-medium text-neutral-900">{party.name}</div>
                 <div className="text-xs text-neutral-500">
@@ -144,27 +155,27 @@ export default async function ProjectDetailPage({
         )}
       </section>
 
-      <section className="space-y-3">
+      <section className="space-y-3 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
         <h2 className="text-sm font-semibold text-neutral-800">Log a Communication</h2>
         <CapturePanel projectId={project.id} parties={parties} />
       </section>
 
-      <section className="space-y-3">
+      <section className="space-y-3 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
         <h2 className="text-sm font-semibold text-neutral-800">Requirements</h2>
         <RequirementsList requirements={requirements} />
       </section>
 
-      <section className="space-y-3">
+      <section className="space-y-3 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
         <h2 className="text-sm font-semibold text-neutral-800">Bid Documents</h2>
         <BidDocuments projectId={project.id} documents={documents} />
       </section>
 
-      <section className="space-y-3">
+      <section className="space-y-3 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
         <h2 className="text-sm font-semibold text-neutral-800">Requirement Changes</h2>
         <RequirementChanges changes={changes} documents={documents} />
       </section>
 
-      <section className="space-y-3">
+      <section className="space-y-3 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
         <h2 className="text-sm font-semibold text-neutral-800">Timeline</h2>
         {events.length === 0 ? (
           <p className="text-sm text-neutral-500">

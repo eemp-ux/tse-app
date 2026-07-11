@@ -14,7 +14,7 @@ export function EventCard({
   const isAi = event.summary_source === "ai_extraction";
 
   return (
-    <li className="rounded-lg border border-neutral-200 bg-white p-4">
+    <li className="rounded-lg border border-neutral-200 bg-neutral-50/70 p-4 transition hover:border-neutral-300">
       <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-500">
         <span className="font-medium text-neutral-700">{statusLabel(event.event_type)}</span>
         {event.direction && <span>· {statusLabel(event.direction)}</span>}

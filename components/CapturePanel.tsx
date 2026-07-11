@@ -66,7 +66,7 @@ export function CapturePanel({
           type="button"
           onClick={() => setMode("ai")}
           className={`rounded-md px-3 py-1 text-sm font-medium ${
-            mode === "ai" ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-600"
+            mode === "ai" ? "bg-indigo-600 text-white" : "bg-neutral-100 text-neutral-600"
           }`}
         >
           Paste &amp; Extract (AI)
@@ -75,7 +75,7 @@ export function CapturePanel({
           type="button"
           onClick={() => setMode("manual")}
           className={`rounded-md px-3 py-1 text-sm font-medium ${
-            mode === "manual" ? "bg-neutral-900 text-white" : "bg-neutral-100 text-neutral-600"
+            mode === "manual" ? "bg-indigo-600 text-white" : "bg-neutral-100 text-neutral-600"
           }`}
         >
           Log Manually
@@ -95,14 +95,14 @@ export function CapturePanel({
               ? "Paste an email, meeting note, or message thread…"
               : "What happened?"
           }
-          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
         />
 
         <div className="grid gap-2 sm:grid-cols-3">
           <select
             value={eventType}
             onChange={(e) => setEventType(e.target.value)}
-            className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+            className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           >
             {EVENT_TYPES.map((t) => (
               <option key={t} value={t}>
@@ -114,7 +114,7 @@ export function CapturePanel({
           <select
             value={partyId}
             onChange={(e) => setPartyId(e.target.value)}
-            className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+            className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           >
             <option value="">No party</option>
             {parties.map((p) => (
@@ -128,7 +128,7 @@ export function CapturePanel({
             <select
               value={direction}
               onChange={(e) => setDirection(e.target.value)}
-              className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+              className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
             >
               {DIRECTIONS.map((d) => (
                 <option key={d} value={d}>
@@ -144,14 +144,14 @@ export function CapturePanel({
             type="datetime-local"
             value={eventDate}
             onChange={(e) => setEventDate(e.target.value)}
-            className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+            className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           />
         )}
 
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-700 disabled:opacity-50"
+          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
         >
           {submitting ? "Saving…" : mode === "ai" ? "Extract & Save" : "Save Event"}
         </button>

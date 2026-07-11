@@ -45,7 +45,7 @@ export function RequirementRow({ requirement }: { requirement: Requirement }) {
   const isAi = requirement.extracted_source === "ai_extraction";
 
   return (
-    <li className="rounded-md border border-neutral-200 bg-white p-3">
+    <li className="rounded-lg border border-neutral-200 bg-neutral-50/70 p-3 transition hover:border-neutral-300">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-medium text-neutral-900">{requirement.title}</p>
@@ -74,7 +74,7 @@ export function RequirementRow({ requirement }: { requirement: Requirement }) {
           value={requirement.status}
           disabled={busy}
           onChange={(e) => updateStatus(e.target.value)}
-          className="rounded border border-neutral-300 px-1.5 py-0.5 text-xs"
+          className="rounded border border-neutral-300 px-1.5 py-0.5 text-xs transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
         >
           <option value="open">Open</option>
           <option value="confirmed">Confirmed</option>
