@@ -8,9 +8,11 @@ import type { ProjectSummary } from "@/lib/types";
 export function ProjectSummaryPanel({
   projectId,
   latestSummary,
+  isOwner,
 }: {
   projectId: string;
   latestSummary: ProjectSummary | null;
+  isOwner: boolean;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -65,6 +67,7 @@ export function ProjectSummaryPanel({
   }
 
   if (!latestSummary) {
+    if (!isOwner) return null;
     return (
       <div className="rounded-xl border border-dashed border-neutral-300 bg-white p-5 shadow-sm">
         <p className="text-sm text-neutral-500">No project summary yet.</p>
@@ -86,7 +89,7 @@ export function ProjectSummaryPanel({
         <h2 className="text-sm font-semibold text-neutral-800">Project Summary</h2>
         <ReviewStatusBadge status={latestSummary.review_status} />
       </div>
-      {editing ? (
+      {isOwner && editing ? (
         <div className="mt-2 space-y-2">
           <textarea
             value={text}
@@ -113,33 +116,35 @@ export function ProjectSummaryPanel({
       ) : (
         <>
           <p className="mt-2 text-sm text-neutral-800">{latestSummary.summary}</p>
-          <div className="mt-2 flex flex-wrap gap-3">
-            {latestSummary.review_status === "unreviewed" && (
+          {isOwner && (
+            <div className="mt-2 flex flex-wrap gap-3">
+              {latestSummary.review_status === "unreviewed" && (
+                <button
+                  onClick={handleApprove}
+                  disabled={busy}
+                  className="text-xs font-medium text-green-700 hover:underline disabled:opacity-50"
+                >
+                  Approve
+                </button>
+              )}
               <button
-                onClick={handleApprove}
-                disabled={busy}
-                className="text-xs font-medium text-green-700 hover:underline disabled:opacity-50"
+                onClick={() => {
+                  setText(latestSummary.summary);
+                  setEditing(true);
+                }}
+                className="text-xs font-medium text-neutral-600 hover:underline"
               >
-                Approve
+                Edit
               </button>
-            )}
-            <button
-              onClick={() => {
-                setText(latestSummary.summary);
-                setEditing(true);
-              }}
-              className="text-xs font-medium text-neutral-600 hover:underline"
-            >
-              Edit
-            </button>
-            <button
-              onClick={handleGenerate}
-              disabled={busy}
-              className="text-xs font-medium text-neutral-600 hover:underline disabled:opacity-50"
-            >
-              {busy ? "Regenerating…" : "Regenerate"}
-            </button>
-          </div>
+              <button
+                onClick={handleGenerate}
+                disabled={busy}
+                className="text-xs font-medium text-neutral-600 hover:underline disabled:opacity-50"
+              >
+                {busy ? "Regenerating…" : "Regenerate"}
+              </button>
+            </div>
+          )}
         </>
       )}
       {error && <p className="mt-1 text-sm text-red-700">{error}</p>}

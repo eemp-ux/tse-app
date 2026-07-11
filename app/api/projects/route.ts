@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { writeAudit } from "@/lib/audit";
+import { getSessionUser, unauthorizedResponse } from "@/lib/auth";
 
 export async function POST(request: Request) {
+  const supabase = await createClient();
+  const user = await getSessionUser(supabase);
+  if (!user) return unauthorizedResponse();
+
   const body = await request.json().catch(() => null);
   const name = typeof body?.name === "string" ? body.name.trim() : "";
   const customerName =
@@ -17,10 +22,10 @@ export async function POST(request: Request) {
     );
   }
 
-  const supabase = await createClient();
   const { data: project, error } = await supabase
     .from("projects")
     .insert({
+      user_id: user.id,
       name,
       customer_name: customerName,
       description: description || null,
@@ -34,6 +39,7 @@ export async function POST(request: Request) {
   }
 
   await writeAudit(supabase, {
+    user_id: user.id,
     project_id: project.id,
     action: "project.created",
     target_table: "projects",

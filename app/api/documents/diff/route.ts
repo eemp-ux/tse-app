@@ -2,8 +2,13 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { writeAudit } from "@/lib/audit";
 import { diffDocuments } from "@/lib/ai/diff";
+import { getSessionUser, unauthorizedResponse, verifyProjectOwnership } from "@/lib/auth";
 
 export async function POST(request: Request) {
+  const supabase = await createClient();
+  const user = await getSessionUser(supabase);
+  if (!user) return unauthorizedResponse();
+
   const body = await request.json().catch(() => null);
   const projectId = typeof body?.project_id === "string" ? body.project_id : "";
   const oldDocumentId = typeof body?.old_document_id === "string" ? body.old_document_id : "";
@@ -16,7 +21,8 @@ export async function POST(request: Request) {
     );
   }
 
-  const supabase = await createClient();
+  const ownership = await verifyProjectOwnership(supabase, projectId, user.id);
+  if (!ownership.ok) return ownership.response;
 
   const [{ data: oldDoc }, { data: newDoc }, { data: requirements }] = await Promise.all([
     supabase.from("bid_documents").select("*").eq("id", oldDocumentId).maybeSingle(),
@@ -60,6 +66,7 @@ export async function POST(request: Request) {
         const { data: newReq } = await supabase
           .from("requirements")
           .insert({
+            user_id: user.id,
             project_id: projectId,
             title: change.new_value.slice(0, 120),
             description: change.new_value,
@@ -78,6 +85,7 @@ export async function POST(request: Request) {
       const { data: changeRow, error: changeError } = await supabase
         .from("requirement_changes")
         .insert({
+          user_id: user.id,
           project_id: projectId,
           requirement_id: requirementId,
           bid_document_id: newDocumentId,
@@ -95,6 +103,7 @@ export async function POST(request: Request) {
     }
 
     await writeAudit(supabase, {
+      user_id: user.id,
       project_id: projectId,
       action: "requirement_changes.detected",
       target_table: "requirement_changes",

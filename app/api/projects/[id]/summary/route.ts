@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { writeAudit } from "@/lib/audit";
 import { generateChronologySummary } from "@/lib/ai/summary";
+import { getSessionUser, unauthorizedResponse, verifyProjectOwnership } from "@/lib/auth";
 
 export async function POST(
   _request: Request,
@@ -9,6 +10,11 @@ export async function POST(
 ) {
   const { id: projectId } = await params;
   const supabase = await createClient();
+  const user = await getSessionUser(supabase);
+  if (!user) return unauthorizedResponse();
+
+  const ownership = await verifyProjectOwnership(supabase, projectId, user.id);
+  if (!ownership.ok) return ownership.response;
 
   const { data: project, error: projectError } = await supabase
     .from("projects")
@@ -84,13 +90,19 @@ export async function POST(
 
     const { data: summary, error } = await supabase
       .from("project_summaries")
-      .insert({ project_id: projectId, summary: result.summary, review_status: "unreviewed" })
+      .insert({
+        user_id: user.id,
+        project_id: projectId,
+        summary: result.summary,
+        review_status: "unreviewed",
+      })
       .select()
       .single();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
     await writeAudit(supabase, {
+      user_id: user.id,
       project_id: projectId,
       action: "project_summary.generated",
       target_table: "project_summaries",

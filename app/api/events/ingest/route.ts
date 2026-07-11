@@ -2,8 +2,13 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { writeAudit } from "@/lib/audit";
 import { extractEvent } from "@/lib/ai/extract";
+import { getSessionUser, unauthorizedResponse, verifyProjectOwnership } from "@/lib/auth";
 
 export async function POST(request: Request) {
+  const supabase = await createClient();
+  const user = await getSessionUser(supabase);
+  if (!user) return unauthorizedResponse();
+
   const body = await request.json().catch(() => null);
   const projectId = typeof body?.project_id === "string" ? body.project_id : "";
   const mode = body?.mode === "manual" ? "manual" : "ai";
@@ -18,7 +23,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Content is required." }, { status: 400 });
   }
 
-  const supabase = await createClient();
+  const ownership = await verifyProjectOwnership(supabase, projectId, user.id);
+  if (!ownership.ok) return ownership.response;
 
   if (mode === "manual") {
     const direction =
@@ -31,6 +37,7 @@ export async function POST(request: Request) {
     const { data: event, error } = await supabase
       .from("events")
       .insert({
+        user_id: user.id,
         project_id: projectId,
         party_id: partyId,
         event_type: eventType,
@@ -48,6 +55,7 @@ export async function POST(request: Request) {
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
     await writeAudit(supabase, {
+      user_id: user.id,
       project_id: projectId,
       action: "event.created",
       target_table: "events",
@@ -65,6 +73,7 @@ export async function POST(request: Request) {
     const { data: event, error } = await supabase
       .from("events")
       .insert({
+        user_id: user.id,
         project_id: projectId,
         party_id: partyId,
         event_type: eventType,
@@ -87,6 +96,7 @@ export async function POST(request: Request) {
         .from("requirements")
         .insert(
           extracted.requirements.map((r) => ({
+            user_id: user.id,
             project_id: projectId,
             source_event_id: event.id,
             title: r.title,
@@ -106,6 +116,7 @@ export async function POST(request: Request) {
     }
 
     await writeAudit(supabase, {
+      user_id: user.id,
       project_id: projectId,
       action: "event.created",
       target_table: "events",
@@ -119,6 +130,7 @@ export async function POST(request: Request) {
     const { data: event, error } = await supabase
       .from("events")
       .insert({
+        user_id: user.id,
         project_id: projectId,
         party_id: partyId,
         event_type: eventType,
@@ -136,6 +148,7 @@ export async function POST(request: Request) {
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
     await writeAudit(supabase, {
+      user_id: user.id,
       project_id: projectId,
       action: "event.created",
       target_table: "events",

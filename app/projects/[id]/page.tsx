@@ -23,6 +23,9 @@ import type {
 
 async function loadProject(id: string) {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { data: project, error: projectError } = await supabase
     .from("projects")
@@ -81,6 +84,7 @@ async function loadProject(id: string) {
     documents: (documents ?? []) as BidDocument[],
     changes: (changes ?? []) as RequirementChange[],
     latestSummary: (summaries?.[0] ?? null) as ProjectSummary | null,
+    isOwner: !!user && project.user_id === user.id,
   };
 }
 
@@ -94,7 +98,8 @@ export default async function ProjectDetailPage({
 
   if (!data) notFound();
 
-  const { project, parties, events, requirements, documents, changes, latestSummary } = data;
+  const { project, parties, events, requirements, documents, changes, latestSummary, isOwner } =
+    data;
   const partyById = new Map(parties.map((p) => [p.id, p]));
 
   return (
@@ -128,12 +133,22 @@ export default async function ProjectDetailPage({
         </Link>
       </div>
 
-      <ProjectSummaryPanel projectId={project.id} latestSummary={latestSummary} />
+      {!isOwner && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          This is a read-only demo project.{" "}
+          <Link href="/signup" className="font-medium underline underline-offset-2">
+            Sign up
+          </Link>{" "}
+          to create and edit your own.
+        </div>
+      )}
+
+      <ProjectSummaryPanel projectId={project.id} latestSummary={latestSummary} isOwner={isOwner} />
 
       <section className="space-y-3 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-neutral-800">Parties</h2>
-          <AddPartyForm projectId={project.id} />
+          {isOwner && <AddPartyForm projectId={project.id} />}
         </div>
         {parties.length === 0 ? (
           <p className="text-sm text-neutral-500">No parties added yet.</p>
@@ -155,24 +170,26 @@ export default async function ProjectDetailPage({
         )}
       </section>
 
-      <section className="space-y-3 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
-        <h2 className="text-sm font-semibold text-neutral-800">Log a Communication</h2>
-        <CapturePanel projectId={project.id} parties={parties} />
-      </section>
+      {isOwner && (
+        <section className="space-y-3 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
+          <h2 className="text-sm font-semibold text-neutral-800">Log a Communication</h2>
+          <CapturePanel projectId={project.id} parties={parties} />
+        </section>
+      )}
 
       <section className="space-y-3 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
         <h2 className="text-sm font-semibold text-neutral-800">Requirements</h2>
-        <RequirementsList requirements={requirements} />
+        <RequirementsList requirements={requirements} isOwner={isOwner} />
       </section>
 
       <section className="space-y-3 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
         <h2 className="text-sm font-semibold text-neutral-800">Bid Documents</h2>
-        <BidDocuments projectId={project.id} documents={documents} />
+        <BidDocuments projectId={project.id} documents={documents} isOwner={isOwner} />
       </section>
 
       <section className="space-y-3 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
         <h2 className="text-sm font-semibold text-neutral-800">Requirement Changes</h2>
-        <RequirementChanges changes={changes} documents={documents} />
+        <RequirementChanges changes={changes} documents={documents} isOwner={isOwner} />
       </section>
 
       <section className="space-y-3 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
@@ -184,7 +201,12 @@ export default async function ProjectDetailPage({
         ) : (
           <ul className="space-y-3">
             {events.map((event) => (
-              <EventCard key={event.id} event={event} party={partyById.get(event.party_id ?? "")} />
+              <EventCard
+                key={event.id}
+                event={event}
+                party={partyById.get(event.party_id ?? "")}
+                isOwner={isOwner}
+              />
             ))}
           </ul>
         )}

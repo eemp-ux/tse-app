@@ -8,11 +8,14 @@ import type { Project } from "@/lib/types";
 
 async function loadProjects() {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const { data: projects, error: projectsError } = await supabase
-    .from("projects")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const projectsQuery = supabase.from("projects").select("*");
+  const { data: projects, error: projectsError } = user
+    ? await projectsQuery.eq("user_id", user.id).order("created_at", { ascending: false })
+    : await projectsQuery.is("user_id", null).order("created_at", { ascending: false });
 
   if (projectsError) throw new Error(projectsError.message);
 
@@ -40,6 +43,7 @@ async function loadProjects() {
   }
 
   return {
+    isLoggedIn: !!user,
     projects: (projects ?? []) as Project[],
     lastEventByProject,
     openReqsByProject,
@@ -67,13 +71,29 @@ export default async function HomePage() {
         </div>
       </div>
 
-      <NewProjectForm />
+      {data?.isLoggedIn ? (
+        <NewProjectForm />
+      ) : (
+        <div className="flex items-center justify-between rounded-xl border border-indigo-100 bg-indigo-50/60 p-4">
+          <p className="text-sm text-indigo-900">
+            You&rsquo;re viewing a read-only demo. Sign up to create and manage your own projects.
+          </p>
+          <Link
+            href="/signup"
+            className="shrink-0 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
+          >
+            Sign up
+          </Link>
+        </div>
+      )}
 
       {loadError && <ErrorBanner message={loadError} />}
 
       {data && data.projects.length === 0 && (
         <div className="rounded-xl border border-dashed border-neutral-300 bg-white p-10 text-center text-sm text-neutral-500">
-          No projects yet — create one above to get started.
+          {data.isLoggedIn
+            ? "No projects yet — create one above to get started."
+            : "No demo projects available right now."}
         </div>
       )}
 

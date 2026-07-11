@@ -6,9 +6,11 @@ import type { EventRow, Party } from "@/lib/types";
 export function EventCard({
   event,
   party,
+  isOwner,
 }: {
   event: EventRow;
   party: Party | undefined;
+  isOwner: boolean;
 }) {
   const body = event.summary ?? event.raw_content;
   const isAi = event.summary_source === "ai_extraction";
@@ -33,7 +35,7 @@ export function EventCard({
         {isAi && <ConfidenceBadge confidence={event.summary_confidence} />}
         {isAi && <ReviewStatusBadge status={event.summary_review_status} />}
       </div>
-      <EventActions event={event} />
+      {isOwner && <EventActions event={event} />}
     </li>
   );
 }

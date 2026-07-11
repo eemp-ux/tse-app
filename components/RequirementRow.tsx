@@ -10,7 +10,13 @@ import {
 } from "@/components/StatusBadge";
 import type { Requirement } from "@/lib/types";
 
-export function RequirementRow({ requirement }: { requirement: Requirement }) {
+export function RequirementRow({
+  requirement,
+  isOwner,
+}: {
+  requirement: Requirement;
+  isOwner: boolean;
+}) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
 
@@ -61,7 +67,7 @@ export function RequirementRow({ requirement }: { requirement: Requirement }) {
       <div className="mt-2 flex flex-wrap items-center gap-2">
         {isAi && <ConfidenceBadge confidence={requirement.extracted_confidence} />}
         {isAi && <ReviewStatusBadge status={requirement.extracted_review_status} />}
-        {isAi && requirement.extracted_review_status === "unreviewed" && (
+        {isOwner && isAi && requirement.extracted_review_status === "unreviewed" && (
           <button
             onClick={approve}
             disabled={busy}
@@ -70,17 +76,19 @@ export function RequirementRow({ requirement }: { requirement: Requirement }) {
             Approve
           </button>
         )}
-        <select
-          value={requirement.status}
-          disabled={busy}
-          onChange={(e) => updateStatus(e.target.value)}
-          className="rounded border border-neutral-300 px-1.5 py-0.5 text-xs transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
-        >
-          <option value="open">Open</option>
-          <option value="confirmed">Confirmed</option>
-          <option value="changed">Changed</option>
-          <option value="withdrawn">Withdrawn</option>
-        </select>
+        {isOwner && (
+          <select
+            value={requirement.status}
+            disabled={busy}
+            onChange={(e) => updateStatus(e.target.value)}
+            className="rounded border border-neutral-300 px-1.5 py-0.5 text-xs transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+          >
+            <option value="open">Open</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="changed">Changed</option>
+            <option value="withdrawn">Withdrawn</option>
+          </select>
+        )}
       </div>
     </li>
   );

@@ -40,9 +40,11 @@ function ApproveDocButton({ doc }: { doc: BidDocument }) {
 export function BidDocuments({
   projectId,
   documents,
+  isOwner,
 }: {
   projectId: string;
   documents: BidDocument[];
+  isOwner: boolean;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -112,18 +114,20 @@ export function BidDocuments({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        {!open && (
-          <button
-            onClick={() => setOpen(true)}
-            className="text-sm font-medium text-neutral-700 underline underline-offset-2 hover:text-neutral-900"
-          >
-            + Add Bid Document
-          </button>
-        )}
-      </div>
+      {isOwner && (
+        <div className="flex items-center justify-between">
+          {!open && (
+            <button
+              onClick={() => setOpen(true)}
+              className="text-sm font-medium text-neutral-700 underline underline-offset-2 hover:text-neutral-900"
+            >
+              + Add Bid Document
+            </button>
+          )}
+        </div>
+      )}
 
-      {open && (
+      {isOwner && open && (
         <form onSubmit={handleSubmit} className="space-y-2 rounded-md border border-neutral-200 p-3">
           {error && <p className="text-sm text-red-700">{error}</p>}
           <div className="grid gap-2 sm:grid-cols-3">
@@ -198,7 +202,7 @@ export function BidDocuments({
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <ConfidenceBadge confidence={doc.ai_summary_confidence} />
                 <ReviewStatusBadge status={doc.ai_summary_review_status} />
-                <ApproveDocButton doc={doc} />
+                {isOwner && <ApproveDocButton doc={doc} />}
               </div>
             </li>
           ))}

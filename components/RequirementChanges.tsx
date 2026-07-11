@@ -40,9 +40,11 @@ function ApproveChangeButton({ change }: { change: RequirementChange }) {
 export function RequirementChanges({
   changes,
   documents,
+  isOwner,
 }: {
   changes: RequirementChange[];
   documents: BidDocument[];
+  isOwner: boolean;
 }) {
   if (changes.length === 0) {
     return <p className="text-sm text-neutral-500">No requirement changes detected yet.</p>;
@@ -75,7 +77,7 @@ export function RequirementChanges({
             </div>
             <div className="mt-2 flex items-center gap-2">
               <ReviewStatusBadge status={change.review_status} />
-              <ApproveChangeButton change={change} />
+              {isOwner && <ApproveChangeButton change={change} />}
             </div>
           </li>
         );

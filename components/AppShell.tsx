@@ -3,14 +3,17 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Sidebar, type SidebarProject } from "@/components/Sidebar";
+import { UserMenu } from "@/components/UserMenu";
 
 const STORAGE_KEY = "tse-sidebar-collapsed";
 
 export function AppShell({
   projects,
+  userEmail,
   children,
 }: {
   projects: SidebarProject[];
+  userEmail: string | null;
   children: React.ReactNode;
 }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -55,6 +58,9 @@ export function AppShell({
             TSE Tracker
           </span>
         </Link>
+        <div className="ml-auto">
+          <UserMenu userEmail={userEmail} />
+        </div>
       </header>
 
       <div className="flex flex-1 overflow-hidden">

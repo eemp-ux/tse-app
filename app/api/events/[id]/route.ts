@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { writeAudit } from "@/lib/audit";
+import { getSessionUser, unauthorizedResponse } from "@/lib/auth";
 
 const EDITABLE_FIELDS = [
   "event_type",
@@ -17,10 +18,12 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
+  const supabase = await createClient();
+  const user = await getSessionUser(supabase);
+  if (!user) return unauthorizedResponse();
+
   const body = await request.json().catch(() => null);
   if (!body) return NextResponse.json({ error: "Invalid body." }, { status: 400 });
-
-  const supabase = await createClient();
 
   const { data: before, error: beforeError } = await supabase
     .from("events")
@@ -30,6 +33,9 @@ export async function PATCH(
 
   if (beforeError) return NextResponse.json({ error: beforeError.message }, { status: 500 });
   if (!before) return NextResponse.json({ error: "Event not found." }, { status: 404 });
+  if (before.user_id !== user.id) {
+    return NextResponse.json({ error: "This event is read-only." }, { status: 403 });
+  }
 
   const updates: Record<string, unknown> = {};
   for (const field of EDITABLE_FIELDS) {
@@ -53,6 +59,7 @@ export async function PATCH(
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   await writeAudit(supabase, {
+    user_id: user.id,
     project_id: event.project_id,
     action: "event.updated",
     target_table: "events",
@@ -69,6 +76,8 @@ export async function DELETE(
 ) {
   const { id } = await params;
   const supabase = await createClient();
+  const user = await getSessionUser(supabase);
+  if (!user) return unauthorizedResponse();
 
   const { data: before, error: beforeError } = await supabase
     .from("events")
@@ -78,11 +87,15 @@ export async function DELETE(
 
   if (beforeError) return NextResponse.json({ error: beforeError.message }, { status: 500 });
   if (!before) return NextResponse.json({ error: "Event not found." }, { status: 404 });
+  if (before.user_id !== user.id) {
+    return NextResponse.json({ error: "This event is read-only." }, { status: 403 });
+  }
 
   const { error } = await supabase.from("events").delete().eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   await writeAudit(supabase, {
+    user_id: user.id,
     project_id: before.project_id,
     action: "event.deleted",
     target_table: "events",

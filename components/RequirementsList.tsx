@@ -8,7 +8,13 @@ const STATUS_ORDER: Record<string, number> = {
   withdrawn: 3,
 };
 
-export function RequirementsList({ requirements }: { requirements: Requirement[] }) {
+export function RequirementsList({
+  requirements,
+  isOwner,
+}: {
+  requirements: Requirement[];
+  isOwner: boolean;
+}) {
   if (requirements.length === 0) {
     return <p className="text-sm text-neutral-500">No requirements extracted yet.</p>;
   }
@@ -20,7 +26,7 @@ export function RequirementsList({ requirements }: { requirements: Requirement[]
   return (
     <ul className="space-y-2">
       {sorted.map((r) => (
-        <RequirementRow key={r.id} requirement={r} />
+        <RequirementRow key={r.id} requirement={r} isOwner={isOwner} />
       ))}
     </ul>
   );
