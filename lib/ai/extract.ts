@@ -4,6 +4,7 @@ export interface ExtractedRequirement {
   title: string;
   description: string;
   priority: "high" | "medium" | "low";
+  category: "commercial" | "technical";
 }
 
 export interface ExtractedEvent {
@@ -18,6 +19,10 @@ export interface ExtractedEvent {
 const SYSTEM_PROMPT = `You extract structured data from pasted business communications (emails, meeting notes, chat messages) for a project prospecting tracker. Read the raw text and identify: the date of the communication if mentioned or inferable, who it's from, the direction (inbound = from customer/vendor to us, outbound = from us to them, internal = internal note), a concise one-to-two sentence summary, and any concrete requirements mentioned (scope items, specs, budget figures, deadlines).
 
 For each requirement's priority, apply these keyword rules: if the text uses words like "mandatory", "must", "critical", "required" for that item, set priority "high". If it uses "preferred", "if possible", "nice to have", set priority "low". Otherwise set priority "medium".
+
+For each requirement's category, classify it as either "commercial" or "technical":
+- "commercial": budget, cost, price, payment terms, contract terms, deadlines/schedule, warranties, insurance, or other business/logistics matters.
+- "technical": scope of work, specifications, materials, equipment, standards/codes, engineering or design details.
 
 Set confidence between 0 and 1 reflecting how certain you are of the extraction (lower if the text is ambiguous, fragmentary, or lacks a clear date/party).`;
 
@@ -54,8 +59,9 @@ export async function extractEvent(rawText: string): Promise<ExtractedEvent> {
               title: { type: "string" },
               description: { type: "string" },
               priority: { type: "string", enum: ["high", "medium", "low"] },
+              category: { type: "string", enum: ["commercial", "technical"] },
             },
-            required: ["title", "description", "priority"],
+            required: ["title", "description", "priority", "category"],
           },
         },
         confidence: {

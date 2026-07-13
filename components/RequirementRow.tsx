@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   RequirementStatusBadge,
   PriorityBadge,
+  CategoryBadge,
   ConfidenceBadge,
   ReviewStatusBadge,
 } from "@/components/StatusBadge";
@@ -20,13 +21,13 @@ export function RequirementRow({
   const router = useRouter();
   const [busy, setBusy] = useState(false);
 
-  async function updateStatus(status: string) {
+  async function updateField(field: string, value: string) {
     setBusy(true);
     try {
       await fetch(`/api/requirements/${requirement.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ [field]: value }),
       });
       router.refresh();
     } finally {
@@ -60,6 +61,7 @@ export function RequirementRow({
           )}
         </div>
         <div className="flex flex-shrink-0 flex-wrap justify-end gap-1.5">
+          <CategoryBadge category={requirement.category} />
           <RequirementStatusBadge status={requirement.status} />
           <PriorityBadge priority={requirement.priority} />
         </div>
@@ -78,9 +80,22 @@ export function RequirementRow({
         )}
         {isOwner && (
           <select
+            value={requirement.category}
+            disabled={busy}
+            onChange={(e) => updateField("category", e.target.value)}
+            title="Category"
+            className="rounded border border-neutral-300 px-1.5 py-0.5 text-xs transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+          >
+            <option value="commercial">Commercial</option>
+            <option value="technical">Technical</option>
+          </select>
+        )}
+        {isOwner && (
+          <select
             value={requirement.status}
             disabled={busy}
-            onChange={(e) => updateStatus(e.target.value)}
+            onChange={(e) => updateField("status", e.target.value)}
+            title="Status"
             className="rounded border border-neutral-300 px-1.5 py-0.5 text-xs transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           >
             <option value="open">Open</option>

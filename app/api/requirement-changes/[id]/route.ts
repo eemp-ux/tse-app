@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { writeAudit } from "@/lib/audit";
 import { getSessionUser, unauthorizedResponse } from "@/lib/auth";
 
+const EDITABLE_FIELDS = ["review_status", "category"] as const;
+
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -13,10 +15,14 @@ export async function PATCH(
   if (!user) return unauthorizedResponse();
 
   const body = await request.json().catch(() => null);
-  const reviewStatus = typeof body?.review_status === "string" ? body.review_status : null;
+  if (!body) return NextResponse.json({ error: "Invalid body." }, { status: 400 });
 
-  if (!reviewStatus) {
-    return NextResponse.json({ error: "review_status is required." }, { status: 400 });
+  const updates: Record<string, unknown> = {};
+  for (const field of EDITABLE_FIELDS) {
+    if (field in body) updates[field] = body[field];
+  }
+  if (Object.keys(updates).length === 0) {
+    return NextResponse.json({ error: "No editable fields provided." }, { status: 400 });
   }
 
   const { data: before, error: beforeError } = await supabase
@@ -33,7 +39,7 @@ export async function PATCH(
 
   const { data: change, error } = await supabase
     .from("requirement_changes")
-    .update({ review_status: reviewStatus })
+    .update(updates)
     .eq("id", id)
     .select()
     .single();
@@ -46,7 +52,7 @@ export async function PATCH(
     action: "requirement_change.reviewed",
     target_table: "requirement_changes",
     target_id: id,
-    detail: { review_status: reviewStatus },
+    detail: updates,
   });
 
   return NextResponse.json({ change });

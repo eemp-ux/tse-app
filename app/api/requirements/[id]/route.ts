@@ -8,6 +8,7 @@ const EDITABLE_FIELDS = [
   "description",
   "status",
   "priority",
+  "category",
   "extracted_review_status",
 ] as const;
 

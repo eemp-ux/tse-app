@@ -94,3 +94,18 @@ export function PriorityBadge({ priority }: { priority: string | null }) {
   };
   return <Badge label={statusLabel(priority)} className={styles[priority] ?? "bg-neutral-100 text-neutral-600"} />;
 }
+
+const CATEGORY_STYLES: Record<string, string> = {
+  commercial: "bg-emerald-100 text-emerald-700",
+  technical: "bg-sky-100 text-sky-700",
+};
+
+export function CategoryBadge({ category }: { category: string | null }) {
+  if (!category) return null;
+  return (
+    <Badge
+      label={statusLabel(category)}
+      className={CATEGORY_STYLES[category] ?? "bg-neutral-100 text-neutral-600"}
+    />
+  );
+}

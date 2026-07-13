@@ -103,6 +103,7 @@ export async function POST(request: Request) {
             description: r.description,
             status: "open",
             priority: r.priority,
+            category: r.category,
             extracted_value: r.title,
             extracted_source: "ai_extraction",
             extracted_confidence: extracted.confidence,

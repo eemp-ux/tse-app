@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     supabase.from("bid_documents").select("*").eq("id", newDocumentId).maybeSingle(),
     supabase
       .from("requirements")
-      .select("id, title, description")
+      .select("id, title, description, category")
       .eq("project_id", projectId)
       .neq("status", "withdrawn"),
   ]);
@@ -72,6 +72,7 @@ export async function POST(request: Request) {
             description: change.new_value,
             status: "open",
             priority: "medium",
+            category: change.category,
             extracted_value: change.new_value,
             extracted_source: "ai_extraction",
             extracted_confidence: null,
@@ -90,6 +91,7 @@ export async function POST(request: Request) {
           requirement_id: requirementId,
           bid_document_id: newDocumentId,
           change_type: change.change_type,
+          category: change.category,
           previous_value: change.previous_value,
           new_value: change.new_value,
           detected_by: "ai",

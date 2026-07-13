@@ -10,6 +10,7 @@ import { BidDocuments } from "@/components/BidDocuments";
 import { RequirementChanges } from "@/components/RequirementChanges";
 import { ProjectSummaryPanel } from "@/components/ProjectSummaryPanel";
 import { BackButton } from "@/components/BackButton";
+import { DeleteProjectButton } from "@/components/DeleteProjectButton";
 import { statusLabel } from "@/lib/format";
 import type {
   BidDocument,
@@ -105,7 +106,12 @@ export default async function ProjectDetailPage({
   return (
     <div className="space-y-8">
       <div>
-        <BackButton label="All Projects" fallbackHref="/" />
+        <div className="flex items-center justify-between">
+          <BackButton label="All Projects" fallbackHref="/" />
+          {isOwner && (
+            <DeleteProjectButton projectId={project.id} projectName={project.name} />
+          )}
+        </div>
         <div className="mt-2 flex items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-neutral-900">{project.name}</h1>

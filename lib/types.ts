@@ -49,6 +49,7 @@ export interface EventRow {
 
 export type RequirementStatus = "open" | "confirmed" | "changed" | "withdrawn";
 export type RequirementPriority = "high" | "medium" | "low";
+export type RequirementCategory = "commercial" | "technical";
 
 export interface Requirement {
   id: string;
@@ -58,6 +59,7 @@ export interface Requirement {
   description: string | null;
   status: RequirementStatus;
   priority: RequirementPriority | null;
+  category: RequirementCategory;
   extracted_value: string | null;
   extracted_source: string | null;
   extracted_confidence: number | null;
@@ -87,6 +89,7 @@ export interface RequirementChange {
   requirement_id: string | null;
   bid_document_id: string | null;
   change_type: ChangeType;
+  category: RequirementCategory;
   previous_value: string | null;
   new_value: string | null;
   detected_by: "ai" | "manual";
